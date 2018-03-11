@@ -2,6 +2,7 @@
 #define _PHONEBOOK_H
 
 #define MAX_LAST_NAME_SIZE 16
+#define MAX_HASH_SIZE 512
 
 /* TODO: After modifying the original version, uncomment the following
  * line to set OPT properly */
@@ -25,7 +26,8 @@ typedef struct __PHONE_BOOK_ENTRY {
     struct __PHONE_BOOK_ENTRY *pNext;
 } entry;
 
-entry *findName(char lastName[], entry *pHead);
-entry *append(char lastName[], entry *e);
+entry *findName(char lastName[], entry **pHead);
+entry **append(char lastName[], entry **e);
+unsigned int BKDRHash(char *str);
 
 #endif

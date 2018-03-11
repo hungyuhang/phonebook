@@ -6,25 +6,55 @@
 #include "phonebook_opt.h"
 
 /* TODO: FILL YOUR OWN IMPLEMENTATION HERE! */
-entry *findName(char lastName[], entry *pHead)
+entry *findName(char lastName[], entry **pHead)
 {
-    /* as same as the original */
-    while (pHead != NULL) {
-        if (strcasecmp(lastName, pHead->lastName) == 0)
-            return pHead;
-        pHead = pHead->pNext;
+    unsigned int index = BKDRHash(lastName);
+    entry *pEntry = *(pHead + index);
+    while (pEntry != NULL) {
+        if (strcasecmp(lastName, pEntry->lastName) == 0)
+            return pEntry;
+        pEntry = pEntry->pNext;
     }
+
     return NULL;
 }
 
-entry *append(char lastName[], entry *e)
+entry **append(char lastName[], entry **e)
 {
-    /* as same as the original */
-    e->pNext = (entry *) malloc(sizeof(entry));
-    e = e->pNext;
-    strcpy(e->lastName, lastName);
-    e->pDetails = (entryDetails *) malloc(sizeof(entryDetails));
-    e->pNext = NULL;
+    entry **pHead = e;
+    unsigned int index = BKDRHash(lastName);
+    entry **ppEntry = (e + index);
+    entry *pEntry = *ppEntry;
 
-    return e;
+    if (*ppEntry == NULL) {
+        *ppEntry = (entry *) malloc(sizeof(entry));
+        pEntry = *ppEntry;
+    } else {
+        while (pEntry != NULL) {
+            if (pEntry->pNext == NULL) {
+                break;
+            } else {
+                pEntry = pEntry->pNext;
+            }
+        }
+        pEntry->pNext = (entry *) malloc(sizeof(entry));
+        pEntry = pEntry->pNext;
+    }
+    strcpy(pEntry->lastName, lastName);
+    pEntry->pDetails = NULL;
+    pEntry->pNext = NULL;
+
+    return pHead;
+}
+
+unsigned int BKDRHash(char *str)
+{
+    unsigned int seed = 131; // 31 131 1313 13131 131313 etc..
+    unsigned int hash = 0;
+
+    while (*str) {
+        hash = hash * seed + (*str++);
+    }
+
+    return (hash & (MAX_HASH_SIZE - 1)); // hash & 0x000001FF
 }

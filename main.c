@@ -42,12 +42,23 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+#ifdef OPT
+    /* build the hash table */
+    entry **pHead, **e;
+    pHead = (entry **) malloc(MAX_HASH_SIZE * sizeof(entry *));
+    printf("size of entry : %lu bytes\n", sizeof(entry));
+    e = pHead;
+    for (int i = 0; i < MAX_HASH_SIZE; i++) {
+        *(e + i) = NULL;
+    }
+#else
     /* build the entry */
     entry *pHead, *e;
     pHead = (entry *) malloc(sizeof(entry));
     printf("size of entry : %lu bytes\n", sizeof(entry));
     e = pHead;
     e->pNext = NULL;
+#endif
 
 #if defined(__GNUC__)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
@@ -88,12 +99,14 @@ int main(int argc, char *argv[])
     FILE *output = fopen(OUT_FILE, "a");
     fprintf(output, "append() findName() %lf %lf\n", cpu_time1, cpu_time2);
     fclose(output);
-
     printf("execution time of append() : %lf sec\n", cpu_time1);
     printf("execution time of findName() : %lf sec\n", cpu_time2);
 
+#ifdef OPT
+#else
     if (pHead->pNext) free(pHead->pNext);
     free(pHead);
+#endif
 
     return 0;
 }

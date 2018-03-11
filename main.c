@@ -44,12 +44,13 @@ int main(int argc, char *argv[])
 
 #ifdef OPT
     /* build the hash table */
-    entry **pHead, **e;
-    pHead = (entry **) malloc(MAX_HASH_SIZE * sizeof(entry *));
+    tableElement *pHead, *e;
+    pHead = (tableElement *) malloc(MAX_HASH_SIZE * sizeof(tableElement));
     printf("size of entry : %lu bytes\n", sizeof(entry));
     e = pHead;
     for (int i = 0; i < MAX_HASH_SIZE; i++) {
-        *(e + i) = NULL;
+        (e + i)->pBottom = NULL;
+        (e + i)->pHead = NULL;
     }
 #else
     /* build the entry */

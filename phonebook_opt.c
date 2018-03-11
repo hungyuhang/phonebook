@@ -6,10 +6,11 @@
 #include "phonebook_opt.h"
 
 /* TODO: FILL YOUR OWN IMPLEMENTATION HERE! */
-entry *findName(char lastName[], entry **pHead)
+entry *findName(char lastName[], tableElement *pHead)
 {
     unsigned int index = BKDRHash(lastName);
-    entry *pEntry = *(pHead + index);
+    entry *pEntry = (pHead + index)->pHead;
+
     while (pEntry != NULL) {
         if (strcasecmp(lastName, pEntry->lastName) == 0)
             return pEntry;
@@ -19,26 +20,21 @@ entry *findName(char lastName[], entry **pHead)
     return NULL;
 }
 
-entry **append(char lastName[], entry **e)
+tableElement *append(char lastName[], tableElement *e)
 {
-    entry **pHead = e;
+    tableElement *pHead = e;
     unsigned int index = BKDRHash(lastName);
-    entry **ppEntry = (e + index);
-    entry *pEntry = *ppEntry;
+    entry *pEntry = NULL;
+    e += index;
 
-    if (*ppEntry == NULL) {
-        *ppEntry = (entry *) malloc(sizeof(entry));
-        pEntry = *ppEntry;
+    if (e->pHead == NULL) {
+        e->pHead = (entry *) malloc(sizeof(entry));
+        pEntry = e->pHead;
+        e->pBottom = pEntry;
     } else {
-        while (pEntry != NULL) {
-            if (pEntry->pNext == NULL) {
-                break;
-            } else {
-                pEntry = pEntry->pNext;
-            }
-        }
-        pEntry->pNext = (entry *) malloc(sizeof(entry));
-        pEntry = pEntry->pNext;
+        e->pBottom->pNext = (entry *) malloc(sizeof(entry));
+        pEntry = e->pBottom->pNext;
+        e->pBottom = pEntry;
     }
     strcpy(pEntry->lastName, lastName);
     pEntry->pDetails = NULL;
